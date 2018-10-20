@@ -1,5 +1,5 @@
 
-job {
+job "nomad-backup" {
     datacenters = [ "shared-services"]
     type = "batch"
     group "nomad-backup" {
