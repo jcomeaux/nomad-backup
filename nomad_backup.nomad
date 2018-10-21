@@ -2,12 +2,15 @@
 job "nomad-backup" {
     datacenters = [ "shared-services"]
     type = "batch"
+    periodic {
+        cron = "0 * * * * "
+    }
     group "nomad-backup" {
         task "nomad-backup" {
 
-            meta {
+            env {
                 NOMAD_URL = "http://nomad.example.com:4646"
-                S3_BUCKET_NAME = "s3-bucket-name-goes-here"
+                S3_BUCKET_NAME = "my-buckets-name"
             }
 
             driver = "docker"
@@ -15,18 +18,8 @@ job "nomad-backup" {
                 image = "joelcomeaux/nomad-backup"
                 args = [
                     "python",
-                    "local/nomad_backup.py"
+                    "backup_jobs.py"
                 ]
-            }
-
-            template {
-                data = <<EOH
-                from nomad_job_manager import backup
-
-                backup(${NOMAD_META_NOMAD_URL}, s3_backup=True, s3_bucket_name=${NOMAD_META_S3_BUCKET_NAME})
-                EOH
-
-                destination = "local/nomad_backup.py"
             }
         }
     }
